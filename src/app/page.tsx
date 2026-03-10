@@ -32,7 +32,6 @@ export default function Home() {
   const webcamRef = useRef<Webcam>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Track initial visit
   useEffect(() => {
     trackAction("visit");
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,7 +58,6 @@ export default function Home() {
     setError(null);
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
-      // Convert base64 to file
       fetch(imageSrc)
         .then((res) => res.blob())
         .then((blob) => {
@@ -80,26 +78,20 @@ export default function Home() {
 
   const handleGenerate = async () => {
     if (!file) return;
-    
     setError(null);
     setViewState("processing");
     try {
       trackAction("upload");
-      
       const formData = new FormData();
       formData.append("image", file);
-
       const response = await fetch("/api/generate", {
         method: "POST",
         body: formData,
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.error || "Generation failed.");
       }
-
       setVideoUrl(data.videoUrl);
       setViewState("result");
     } catch (err) {
@@ -110,7 +102,6 @@ export default function Home() {
 
   const handleDownload = () => {
     trackAction("download");
-    // Simple download logic
     if (videoUrl) {
       const a = document.createElement("a");
       a.href = videoUrl;
@@ -134,7 +125,6 @@ export default function Home() {
         console.error("Error sharing:", err);
       }
     } else {
-      // Fallback
       navigator.clipboard.writeText(videoUrl || "");
       alert("Link copied to clipboard!");
     }
@@ -169,16 +159,17 @@ export default function Home() {
       <div className="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl">
         {/* Glow effect */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-brand-500 to-transparent opacity-50"></div>
-        
+
+        {/* INPUT STATE */}
         {viewState === "input" && (
           <div className="flex flex-col space-y-8 animate-in fade-in zoom-in-95 duration-300">
-            {/* Input Selection Tabs */}
+            {/* Tabs */}
             <div className="flex p-1 bg-slate-950/50 rounded-2xl">
               <button
                 onClick={() => setInputMethod("upload")}
                 className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all ${
-                  inputMethod === "upload" 
-                    ? "bg-slate-800 text-white shadow-md border border-slate-700" 
+                  inputMethod === "upload"
+                    ? "bg-slate-800 text-white shadow-md border border-slate-700"
                     : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
                 }`}
               >
@@ -188,8 +179,8 @@ export default function Home() {
               <button
                 onClick={() => setInputMethod("camera")}
                 className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all ${
-                  inputMethod === "camera" 
-                    ? "bg-slate-800 text-white shadow-md border border-slate-700" 
+                  inputMethod === "camera"
+                    ? "bg-slate-800 text-white shadow-md border border-slate-700"
                     : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
                 }`}
               >
@@ -203,60 +194,62 @@ export default function Home() {
               {previewUrl ? (
                 <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 group">
                   <img src={previewUrl} alt="Preview" className="w-full h-full object-contain" />
-                  <button 
+                  <button
                     onClick={clearSelection}
-                    className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black border border-white/10 rounded-full text-white backdrop-blur transition-all disabled:opacity-50"
+                    className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black border border-white/10 rounded-full text-white backdrop-blur transition-all"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
+              ) : inputMethod === "upload" ? (
+                <div className="w-full h-[300px] border-2 border-dashed border-slate-700 hover:border-brand-500/50 rounded-2xl bg-slate-950/30 flex flex-col items-center justify-center transition-colors group relative">
+                  <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <ImageIcon className="w-8 h-8 text-slate-400 group-hover:text-brand-400" />
+                  </div>
+                  <p className="text-slate-300 font-medium text-lg">Click to browse or drag and drop</p>
+                  <p className="text-slate-500 text-sm mt-2">Supports JPG, PNG (Max 5MB)</p>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    onChange={handleFileChange}
+                    ref={fileInputRef}
+                  />
+                </div>
               ) : (
                 <div className="w-full h-[300px] border-2 border-dashed border-slate-700 hover:border-brand-500/50 rounded-2xl bg-slate-950/30 flex flex-col items-center justify-center transition-colors group relative">
-                  {inputMethod === "upload" ? (
-                    <>
-                      <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                        <ImageIcon className="w-8 h-8 text-slate-400 group-hover:text-brand-400" />
-                      </div>
-                      <p className="text-slate-300 font-medium text-lg">Click to browse or drag and drop</p>
-                      <p className="text-slate-500 text-sm mt-2">Supports JPG, PNG (Max 5MB)</p>
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        onChange={handleFileChange}
-                        ref={fileInputRef}
+                  {typeof window !== "undefined" ? (
+                    <div className="w-full h-full flex flex-col items-center overflow-hidden rounded-2xl">
+                      <Webcam
+                        ref={webcamRef}
+                        audio={false}
+                        screenshotFormat="image/jpeg"
+                        videoConstraints={{ facingMode: "user" }}
+                        className="w-full h-full object-cover"
                       />
-                    </>
+                      <div className="absolute bottom-6 w-full flex justify-center">
+                        <button
+                          onClick={captureCamera}
+                          className="w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center border-4 border-slate-900 shadow-xl hover:scale-105 transition-transform"
+                        >
+                          <Camera className="w-6 h-6 text-white" />
+                        </button>
+                      </div>
+                    </div>
                   ) : (
-                    <div className="w-full h-[300px] border-2 border-dashed border-slate-700 hover:border-brand-500/50 rounded-2xl bg-slate-950/30 flex flex-col items-center justify-center transition-colors group relative">
-                      {typeof window !== 'undefined' ? (
-                        <div className="w-full h-full flex flex-col items-center overflow-hidden rounded-2xl">
-                          <Webcam
-                            ref={webcamRef}
-                            audio={false}
-                            screenshotFormat="image/jpeg"
-                            videoConstraints={{ facingMode: "user" }}
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute bottom-6 w-full flex justify-center">
-                            <button 
-                              onClick={captureCamera}
-                              className="w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center border-4 border-slate-900 shadow-xl hover:scale-105 transition-transform"
-                            >
-                              <Camera className="w-6 h-6 text-white" />
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center text-center p-8">
-                          <Camera className="w-16 h-16 text-slate-400 mb-4" />
-                          <p className="text-slate-400 text-sm">Camera not available in production</p>
-                          <p className="text-slate-500 text-xs mt-2">Please upload an image file instead</p>
-                        </div>
-                      )}
+                    <div className="flex flex-col items-center justify-center text-center p-8">
+                      <Camera className="w-16 h-16 text-slate-400 mb-4" />
+                      <p className="text-slate-400 text-sm">Camera not available in production</p>
+                      <p className="text-slate-500 text-xs mt-2">Please upload an image file instead</p>
                     </div>
                   )}
                 </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-end pt-4 border-t border-slate-800">
+              <button
                 onClick={handleGenerate}
                 disabled={!file}
                 className="w-full sm:w-auto px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:hover:bg-brand-600 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_30px_rgba(124,58,237,0.5)]"
@@ -268,6 +261,7 @@ export default function Home() {
           </div>
         )}
 
+        {/* PROCESSING STATE */}
         {viewState === "processing" && (
           <div className="flex flex-col items-center justify-center py-20 px-4 text-center animate-in fade-in duration-300">
             <div className="relative w-24 h-24 mb-8">
@@ -283,6 +277,7 @@ export default function Home() {
           </div>
         )}
 
+        {/* RESULT STATE */}
         {viewState === "result" && videoUrl && (
           <div className="flex flex-col space-y-8 animate-in slide-in-from-bottom-4 fade-in duration-500">
             <div className="flex items-center justify-between">
@@ -290,7 +285,7 @@ export default function Home() {
                 <CheckCircle2 className="w-6 h-6 text-emerald-400" />
                 <h3 className="text-xl font-medium text-white">Video Generated</h3>
               </div>
-              <button 
+              <button
                 onClick={resetAll}
                 className="text-sm font-medium text-slate-400 hover:text-white flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
               >
@@ -298,27 +293,27 @@ export default function Home() {
                 Start Over
               </button>
             </div>
-            
+
             <div className="rounded-2xl overflow-hidden bg-black border border-slate-800 shadow-2xl relative aspect-video">
-              <video 
-                src={videoUrl} 
-                controls 
-                autoPlay 
-                loop 
+              <video
+                src={videoUrl}
+                controls
+                autoPlay
+                loop
                 playsInline
                 className="w-full h-full object-cover"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <button 
+              <button
                 onClick={handleDownload}
                 className="flex items-center justify-center gap-2 px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl transition-all"
               >
                 <Download className="w-5 h-5" />
                 Download MP4
               </button>
-              <button 
+              <button
                 onClick={handleShare}
                 className="flex items-center justify-center gap-2 px-6 py-4 bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-xl transition-all shadow-[0_0_20px_rgba(124,58,237,0.3)]"
               >
@@ -329,7 +324,7 @@ export default function Home() {
           </div>
         )}
       </div>
-      
+
       {/* Footer */}
       <div className="mt-12 text-center text-slate-500 text-sm">
         <p>Built for demonstrating the Image to Video API flow.</p>
