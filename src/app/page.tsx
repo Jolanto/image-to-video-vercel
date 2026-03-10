@@ -150,7 +150,7 @@ export default function Home() {
           Bring your images to Life
         </h1>
         <p className="text-slate-400 text-lg">
-          Upload any image and our AI will generate a captivating video in seconds. Free to use, no signup required.
+          Upload any image and we will generate a captivating video in seconds. Free to use, no signup required.
         </p>
       </div>
 
@@ -259,7 +259,7 @@ export default function Home() {
             </div>
             <h3 className="text-2xl font-semibold text-white mb-2">Creating Magic</h3>
             <p className="text-slate-400 max-w-sm">
-              Our AI is analyzing your image and generating stunning visual effects. This usually takes a few seconds.
+              We are analyzing your image and generating stunning visual effects. This usually takes a few seconds.
             </p>
           </div>
         )}
