@@ -226,7 +226,7 @@ export default function Home() {
                         onChange={handleFileChange}
                         ref={fileInputRef}
                       />
-                    </div>
+                    </>
                   ) : (
                     <div className="w-full h-[300px] border-2 border-dashed border-slate-700 hover:border-brand-500/50 rounded-2xl bg-slate-950/30 flex flex-col items-center justify-center transition-colors group relative">
                       {typeof window !== 'undefined' ? (
