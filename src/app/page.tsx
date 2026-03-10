@@ -16,6 +16,12 @@ import {
   CheckCircle2,
   X
 } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const WebcamCapture = dynamic(() => import("@/app/WebcamCapture"), {
+  ssr: false,
+  loading: () => <p className="text-slate-400 text-sm">Loading camera...</p>,
+});
 
 type ViewState = "input" | "processing" | "result";
 type InputMethod = "upload" | "camera";
@@ -217,32 +223,13 @@ export default function Home() {
                   />
                 </div>
               ) : (
-                <div className="w-full h-[300px] border-2 border-dashed border-slate-700 hover:border-brand-500/50 rounded-2xl bg-slate-950/30 flex flex-col items-center justify-center transition-colors group relative">
-                  {typeof window !== "undefined" ? (
-                    <div className="w-full h-full flex flex-col items-center overflow-hidden rounded-2xl">
-                      <Webcam
-                        ref={webcamRef}
-                        audio={false}
-                        screenshotFormat="image/jpeg"
-                        videoConstraints={{ facingMode: "user" }}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute bottom-6 w-full flex justify-center">
-                        <button
-                          onClick={captureCamera}
-                          className="w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center border-4 border-slate-900 shadow-xl hover:scale-105 transition-transform"
-                        >
-                          <Camera className="w-6 h-6 text-white" />
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center text-center p-8">
-                      <Camera className="w-16 h-16 text-slate-400 mb-4" />
-                      <p className="text-slate-400 text-sm">Camera not available in production</p>
-                      <p className="text-slate-500 text-xs mt-2">Please upload an image file instead</p>
-                    </div>
-                  )}
+                <div className="w-full h-[300px] border-2 border-dashed border-slate-700 rounded-2xl bg-slate-950/30 relative">
+                  <WebcamCapture
+                    onCapture={(file, preview) => {
+                      setFile(file);
+                      setPreviewUrl(preview);
+                    }}
+                  />
                 </div>
               )}
             </div>
