@@ -6,21 +6,29 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
-        brand: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-        }
+        primary: "#eb0089",
+        "background-light": "#f8f5f7",
+        "background-dark": "#230f1b",
+        "pink-50": "#fdf2f8", 
+        "pink-100": "#fce7f3",
+        "pink-500": "#ec4899",
+        "pink-600": "#db2777",
+        "pink-700": "#be185d",
+        "pink-800": "#9d174d",
+        "pink-900": "#831843",
+      },
+      fontFamily: {
+        display: ["Be Vietnam Pro", "sans-serif"],
+      },
+      borderRadius: {
+        DEFAULT: "0.25rem",
+        lg: "0.5rem",
+        xl: "0.75rem",
+        full: "9999px",
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

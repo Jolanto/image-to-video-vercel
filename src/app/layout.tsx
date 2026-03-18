@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Image to Video",
-  description: "Transform your static images into captivating videos instantly.",
+  title: "Pinkvilla AI - Transform Images to Viral Videos",
+  description: "Create stunning AI-powered animations from your photos in seconds. Professional cinematic results with one click.",
 };
 
 export default function RootLayout({
@@ -18,11 +18,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="light">
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+      </head>
       <body
-        className={`${inter.variable} font-sans antialiased bg-slate-950 text-slate-50 selection:bg-brand-500`}
+        className={`${inter.variable} font-display antialiased bg-white text-slate-900 selection:bg-primary/20`}
       >
-        <div className="relative flex min-h-screen flex-col">
+        <div className="relative flex min-h-screen flex-col overflow-x-hidden">
           {children}
         </div>
       </body>
