@@ -17,7 +17,9 @@ import {
   X,
   Pause,
   PlayCircle,
-  CloudUpload
+  CloudUpload,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import dynamic from "next/dynamic";
 
@@ -29,6 +31,50 @@ const WebcamCapture = dynamic(() => import("@/app/WebcamCapture"), {
 type ViewState = "input" | "processing" | "result";
 type InputMethod = "upload" | "camera";
 
+// Video Templates — all displayed in 9:16 portrait containers, object-cover fills the frame
+const videoTemplates = [
+  {
+    id: "1",
+    name: "1",
+    description: "Professional film-style video",
+    thumbnailVideo: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    aspectRatio: "9:16"
+  },
+  {
+    id: "2",
+    name: "2",
+    description: "Vertical format for reels/stories",
+    thumbnailVideo: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.mp4",
+    videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.mp4",
+    aspectRatio: "9:16"
+  },
+  {
+    id: "3",
+    name: "3",
+    description: "Corporate presentation style",
+    thumbnailVideo: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    aspectRatio: "9:16"
+  },
+  {
+    id: "4",
+    name: "4",
+    description: "Creative effects and transitions",
+    thumbnailVideo: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    aspectRatio: "9:16"
+  },
+  {
+    id: "5",
+    name: "5",
+    description: "Clean and simple animations",
+    thumbnailVideo: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    aspectRatio: "9:16"
+  }
+];
+
 export default function Home() {
   const [viewState, setViewState] = useState<ViewState>("input");
   const [inputMethod, setInputMethod] = useState<InputMethod>("upload");
@@ -39,10 +85,26 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [videoProgress, setVideoProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  
+  const [selectedTemplate, setSelectedTemplate] = useState(videoTemplates[0]);
+  const [hoveredVideo, setHoveredVideo] = useState<string | null>(null);
+
+  const [isMuted, setIsMuted] = useState(false);
+
   const { trackAction } = useTracking();
   const webcamRef = useRef<Webcam>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = 120;
+      carouselRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   useEffect(() => {
     trackAction("visit");
@@ -82,7 +144,6 @@ export default function Home() {
   }, [webcamRef]);
 
   const clearSelection = () => {
-    setFile(null);
     setPreviewUrl(null);
     setError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -93,8 +154,7 @@ export default function Home() {
     setError(null);
     setViewState("processing");
     setProgress(0);
-    
-    // Simulate progress
+
     const progressInterval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 90) {
@@ -107,23 +167,17 @@ export default function Home() {
 
     try {
       trackAction("upload");
-      const formData = new FormData();
-      formData.append("image", file);
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-      
+
+      // Simulate generation delay — swap this block for a real API call when ready
+      await new Promise(res => setTimeout(res, 3000));
+
       clearInterval(progressInterval);
       setProgress(100);
-      
-      if (!response.ok) {
-        throw new Error(data.error || "Generation failed.");
-      }
-      setVideoUrl(data.videoUrl);
+
+      // Use the selected template's dummy video
+      setVideoUrl(selectedTemplate.videoUrl);
       setViewState("result");
-      setIsPlaying(true); // Start playing by default
+      setIsPlaying(true);
     } catch (err) {
       clearInterval(progressInterval);
       setError(err instanceof Error ? err.message : "An unexpected error occurred.");
@@ -171,7 +225,7 @@ export default function Home() {
   };
 
   const togglePlayPause = () => {
-    const video = document.querySelector('video');
+    const video = videoRef.current;
     if (video) {
       if (isPlaying) {
         video.pause();
@@ -180,6 +234,14 @@ export default function Home() {
         video.play();
         setIsPlaying(true);
       }
+    }
+  };
+
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (video) {
+      video.muted = !video.muted;
+      setIsMuted(video.muted);
     }
   };
 
@@ -219,7 +281,7 @@ export default function Home() {
               {/* Upload Area */}
               <div className={`rounded-2xl border-2 border-dashed border-primary/20 bg-white p-8 shadow-sm backdrop-blur-sm ${viewState === 'result' ? 'opacity-50 pointer-events-none' : ''}`}>
                 <h3 className="text-lg font-bold mb-4">Step 1: Upload Source</h3>
-                
+
                 {previewUrl ? (
                   <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-100 border border-gray-300">
                     <img src={previewUrl} alt="Preview" className="w-full h-full object-contain" />
@@ -260,7 +322,10 @@ export default function Home() {
 
                     {/* Upload/Camera Interface */}
                     {inputMethod === "upload" ? (
-                      <div className="flex flex-col items-center justify-center gap-4 text-center py-10 border-2 border-dashed border-primary/10 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer group">
+                      <div
+                        className="flex flex-col items-center justify-center gap-4 text-center py-10 border-2 border-dashed border-primary/10 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer group"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
                         <div className="h-16 w-16 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
                           <CloudUpload className="w-8 h-8" />
                         </div>
@@ -268,12 +333,6 @@ export default function Home() {
                           <p className="font-bold text-gray-900">Select an image</p>
                           <p className="text-xs text-gray-500">JPG, PNG or WebP (Max 5MB)</p>
                         </div>
-                        <button 
-                          onClick={() => fileInputRef.current?.click()}
-                          className="mt-2 rounded-lg bg-primary px-5 py-2 text-sm font-bold text-white shadow-md"
-                        >
-                          Browse Files
-                        </button>
                         <input
                           ref={fileInputRef}
                           type="file"
@@ -317,11 +376,114 @@ export default function Home() {
                   </div>
                 )}
 
+                {/* Template Selection Carousel */}
+                {previewUrl && (
+                  <div className="space-y-4 mt-6">
+                    <h3 className="text-lg font-bold">Step 2: Choose Template</h3>
+                    <div className="relative">
+                      {/* Left Arrow */}
+                      <button
+                        onClick={() => scrollCarousel('left')}
+                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 z-10 bg-white/90 hover:bg-white border border-gray-200 rounded-full p-2 shadow-lg transition-all"
+                        aria-label="Scroll left"
+                      >
+                        <ChevronLeft className="w-4 h-4 text-gray-700" />
+                      </button>
+
+                      {/* Right Arrow */}
+                      <button
+                        onClick={() => scrollCarousel('right')}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 z-10 bg-white/90 hover:bg-white border border-gray-200 rounded-full p-2 shadow-lg transition-all"
+                        aria-label="Scroll right"
+                      >
+                        <ChevronRight className="w-4 h-4 text-gray-700" />
+                      </button>
+
+                      {/* Carousel Container */}
+                      <div
+                        ref={carouselRef}
+                        className="overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory"
+                      >
+                        <div className="flex gap-3 pb-2 px-1">
+                          {videoTemplates.map((template) => (
+                            <div
+                              key={template.id}
+                              onClick={() => setSelectedTemplate(template)}
+                              className={`flex-shrink-0 w-28 snap-start cursor-pointer transition-all duration-200 ${
+                                selectedTemplate.id === template.id
+                                  ? "ring-2 ring-primary scale-105"
+                                  : "hover:scale-102"
+                              }`}
+                            >
+                              <div className="rounded-xl overflow-hidden bg-white border border-gray-200 shadow-sm group">
+                                {/* Template Video Thumbnail */}
+                                <div className="relative aspect-[9/16]">
+                                  <video
+                                    key={template.id}
+                                    src={template.thumbnailVideo}
+                                    poster={`https://picsum.photos/seed/${template.id}/200/120.jpg`}
+                                    muted
+                                    loop
+                                    playsInline
+                                    className="w-full h-full object-cover"
+                                    onMouseEnter={(e) => {
+                                      if (hoveredVideo !== template.id) {
+                                        setHoveredVideo(template.id);
+                                        const video = e.currentTarget;
+                                        video.currentTime = 0;
+                                        const playPromise = video.play();
+                                        if (playPromise !== undefined) {
+                                          playPromise.catch((err: any) => {
+                                            console.warn(`Video play error for ${template.id}:`, err);
+                                          });
+                                        }
+                                      }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      if (hoveredVideo === template.id) {
+                                        setHoveredVideo(null);
+                                        e.currentTarget.pause();
+                                      }
+                                    }}
+                                    preload="metadata"
+                                    onError={() => {}}
+                                  />
+                                  <div className="absolute top-2 right-2">
+                                    <div className={`w-3 h-3 rounded-full border-2 border-white ${
+                                      selectedTemplate.id === template.id
+                                        ? "bg-primary"
+                                        : "bg-gray-400"
+                                    }`}></div>
+                                  </div>
+                                  {/* Play icon overlay */}
+                                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                    <PlayCircle className="w-8 h-8 text-white/80" />
+                                  </div>
+                                </div>
+
+                                {/* Template Info */}
+                                <div className="p-2">
+                                  <h4 className="font-bold text-xs text-gray-900">{template.name}</h4>
+                                  <div className="flex items-center gap-1 mt-1">
+                                    <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                                      {template.aspectRatio}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Generate Button */}
-                {file && (
+                {file && previewUrl && (
                   <button
                     onClick={handleGenerate}
-                    className="w-full rounded-lg bg-primary px-6 py-3 text-lg font-bold text-white shadow-lg hover:bg-primary/90 transition-all"
+                    className="w-full mt-6 rounded-lg bg-primary px-6 py-3 text-lg font-bold text-white shadow-lg hover:bg-primary/90 transition-all"
                   >
                     Generate Video
                   </button>
@@ -341,8 +503,8 @@ export default function Home() {
                       <span className="font-bold text-primary">{progress}%</span>
                     </div>
                     <div className="h-2.5 w-full overflow-hidden rounded-full bg-primary/10">
-                      <div 
-                        className="h-full rounded-full bg-primary transition-all duration-500" 
+                      <div
+                        className="h-full rounded-full bg-primary transition-all duration-500"
                         style={{ width: `${progress}%` }}
                       ></div>
                     </div>
@@ -361,12 +523,13 @@ export default function Home() {
                 </div>
               )}
             </div>
+
             {/* Right Column - Video Preview */}
             <div className="lg:col-span-7">
               {viewState === "result" && videoUrl ? (
                 <div className="space-y-6">
-                  <div className="overflow-hidden rounded-2xl bg-slate-900 shadow-2xl shadow-primary/20 aspect-video relative group">
-                    <div 
+                  <div className="overflow-hidden rounded-2xl bg-slate-900 shadow-2xl shadow-primary/20 aspect-[9/16] relative group">
+                    <div
                       onClick={togglePlayPause}
                       className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer"
                     >
@@ -376,11 +539,13 @@ export default function Home() {
                         <PlayCircle className="w-16 h-16 text-white" />
                       )}
                     </div>
-                    <video 
-                      src={videoUrl} 
-                      autoPlay 
-                      loop 
+                    <video
+                      ref={videoRef}
+                      src={videoUrl}
+                      autoPlay
+                      loop
                       playsInline
+                      muted={isMuted}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                       onTimeUpdate={(e) => {
                         const video = e.currentTarget;
@@ -388,45 +553,66 @@ export default function Home() {
                           setVideoProgress((video.currentTime / video.duration) * 100);
                         }
                       }}
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
                     />
-                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between z-20">
-                      <div className="flex items-center gap-2">
-                        {videoUrl && (
-                          <div className="h-1 w-full rounded-full bg-white/30">
-                            <div 
-                              className="h-full bg-primary rounded-full transition-all duration-300" 
-                              style={{ width: `${videoProgress}%` }}
-                            ></div>
-                          </div>
+                    <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 z-20">
+                      {/* Play/Pause button */}
+                      <button
+                        onClick={togglePlayPause}
+                        className="p-2 bg-black/40 hover:bg-black/60 rounded-full backdrop-blur-sm transition-all"
+                      >
+                        {isPlaying ? (
+                          <Pause className="w-4 h-4 text-white" />
+                        ) : (
+                          <PlayCircle className="w-4 h-4 text-white" />
                         )}
+                      </button>
+                      {/* Progress bar */}
+                      <div className="flex-1 h-1 rounded-full bg-white/30 cursor-pointer" onClick={(e) => {
+                        const video = videoRef.current;
+                        if (!video) return;
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const ratio = (e.clientX - rect.left) / rect.width;
+                        video.currentTime = ratio * video.duration;
+                      }}>
+                        <div
+                          className="h-full bg-primary rounded-full transition-all duration-300"
+                          style={{ width: `${videoProgress}%` }}
+                        ></div>
                       </div>
-                      {videoUrl && (
-                        <span className="text-[10px] font-bold text-white uppercase tracking-widest bg-black/40 px-2 py-1 rounded backdrop-blur-sm">Preview</span>
-                      )}
+                      {/* Mute button */}
+                      <button
+                        onClick={toggleMute}
+                        className="p-2 bg-black/40 hover:bg-black/60 rounded-full backdrop-blur-sm transition-all"
+                      >
+                        {isMuted ? (
+                          <span className="text-white text-xs font-bold w-4 h-4 flex items-center justify-center">🔇</span>
+                        ) : (
+                          <span className="text-white text-xs font-bold w-4 h-4 flex items-center justify-center">🔊</span>
+                        )}
+                      </button>
+                      <span className="text-[10px] font-bold text-white uppercase tracking-widest bg-black/40 px-2 py-1 rounded backdrop-blur-sm whitespace-nowrap">Preview</span>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div className="flex gap-2">
-                      {videoUrl && (
-                        <button 
-                          onClick={handleDownload}
-                          className="flex items-center gap-2 rounded-lg bg-white border border-primary/20 px-4 py-3 text-sm font-bold hover:bg-primary/5"
-                        >
-                          <Download className="w-4 h-4" />
-                          Download
-                        </button>
-                      )}
-                      {videoUrl && (
-                        <button 
-                          onClick={handleShare}
-                          className="flex items-center gap-2 rounded-lg bg-white border border-primary/20 px-4 py-3 text-sm font-bold hover:bg-primary/5"
-                        >
-                          <Share2 className="w-4 h-4" />
-                          Share
-                        </button>
-                      )}
-                      <button 
+                      <button
+                        onClick={handleDownload}
+                        className="flex items-center gap-2 rounded-lg bg-white border border-primary/20 px-4 py-3 text-sm font-bold hover:bg-primary/5"
+                      >
+                        <Download className="w-4 h-4" />
+                        Download
+                      </button>
+                      <button
+                        onClick={handleShare}
+                        className="flex items-center gap-2 rounded-lg bg-white border border-primary/20 px-4 py-3 text-sm font-bold hover:bg-primary/5"
+                      >
+                        <Share2 className="w-4 h-4" />
+                        Share
+                      </button>
+                      <button
                         onClick={resetAll}
                         className="flex items-center gap-2 rounded-lg bg-white border border-primary/20 px-4 py-3 text-sm font-bold hover:bg-primary/5"
                       >
@@ -447,21 +633,18 @@ export default function Home() {
                     </div>
                     <div className="rounded-xl bg-white p-4 border border-primary/5">
                       <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Style</p>
-                      <p className="font-bold">Cinematic</p>
+                      <p className="font-bold">{selectedTemplate.name}</p>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="overflow-hidden rounded-2xl bg-slate-900 shadow-2xl shadow-primary/20 aspect-video relative group">
-
-                  <img 
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                    alt="Video preview placeholder" 
+                <div className="overflow-hidden rounded-2xl bg-slate-900 shadow-2xl shadow-primary/20 aspect-[9/16] relative group">
+                  <img
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    alt="Video preview placeholder"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuFy1TBBPgaL-x5TPLH3M-Gxv2XEPUeYva6U4ZoYkrwAJeGhASnfLqVr_Gl3mMt4Vocqmjdk_FedE0SvZ9i9i5v25mYe6IttdZyTAf7ANc657TBhyeruezn8gGWWJDXFbLMbUuzDcOfwDpKbMX0ZA8rWB0uKwZu8lwzWxY2tA-7Stl_affDXmjK1Qy2TWMpDIBBP3b3ik90MA_lFisarU1qYLGIVVHBVo-ERtzx8nBYMbqEU8IV5m22vqHPbavYJOxFG38nZHFRQ"
                   />
                   <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between z-20">
-                    <div className="flex items-center gap-2">
-                    </div>
                     <span className="text-[10px] font-bold text-white uppercase tracking-widest bg-black/40 px-2 py-1 rounded backdrop-blur-sm">Preview</span>
                   </div>
                 </div>
@@ -521,7 +704,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-primary/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-400">
-            <p> 2024 Pinkvilla Media Private Limited. All rights reserved.</p>
+            <p>&copy; 2024 Pinkvilla Media Private Limited. All rights reserved.</p>
             <div className="flex gap-6"></div>
           </div>
         </div>

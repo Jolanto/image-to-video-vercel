@@ -2,10 +2,20 @@ import { NextResponse } from 'next/server';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
+// Template video URLs mapping
+const templateVideos = {
+  cinematic: 'https://www.w3schools.com/html/mov_bbb.mp4',
+  social: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
+  business: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+  artistic: 'https://sample-videos.com/video321/mp4/480/big_buck_bunny_480p_1mb.mp4',
+  minimal: 'https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_1mb.mp4'
+};
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get('image') as File | null;
+    const template = formData.get('template') as string || 'cinematic';
 
     if (!file) {
       return NextResponse.json({ error: 'No image uploaded' }, { status: 400 });
@@ -23,13 +33,13 @@ export async function POST(request: Request) {
     // Simulate processing delay (3 seconds) to demonstrate processing UI
     await new Promise(resolve => setTimeout(resolve, 3000));
 
-    // Return dummy video
-    // This is a publicly available open source test video
-    const dummyVideoUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
+    // Return template-specific video
+    const videoUrl = templateVideos[template as keyof typeof templateVideos] || templateVideos.cinematic;
 
     return NextResponse.json({ 
         success: true, 
-        videoUrl: dummyVideoUrl 
+        videoUrl: videoUrl,
+        template: template
     });
 
   } catch (error) {
