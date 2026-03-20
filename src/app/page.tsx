@@ -34,40 +34,40 @@ type InputMethod = "upload" | "camera";
 // Video Templates — all displayed in 9:16 portrait containers, object-cover fills the frame
 const videoTemplates = [
   {
-    id: "1",
-    name: "1",
+    id: "cinematic",
+    name: "Cinematic",
     description: "Professional film-style video",
     thumbnailVideo: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
     videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
     aspectRatio: "9:16"
   },
   {
-    id: "2",
-    name: "2",
+    id: "social",
+    name: "Social Media",
     description: "Vertical format for reels/stories",
     thumbnailVideo: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.mp4",
     videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.mp4",
     aspectRatio: "9:16"
   },
   {
-    id: "3",
-    name: "3",
+    id: "business",
+    name: "Business",
     description: "Corporate presentation style",
     thumbnailVideo: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
     aspectRatio: "9:16"
   },
   {
-    id: "4",
-    name: "4",
+    id: "artistic",
+    name: "Artistic",
     description: "Creative effects and transitions",
     thumbnailVideo: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
     aspectRatio: "9:16"
   },
   {
-    id: "5",
-    name: "5",
+    id: "minimal",
+    name: "Minimal",
     description: "Clean and simple animations",
     thumbnailVideo: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
@@ -246,10 +246,10 @@ export default function Home() {
   };
 
   return (
-    <>
+    <div className="overflow-x-hidden w-full">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-primary/10">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4">
           <div className="flex items-center gap-8">
             <div className="font-black text-2xl text-primary">Pinkvilla</div>
           </div>
@@ -258,10 +258,10 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative px-6 py-12 md:py-20 overflow-hidden">
+        <section className="relative px-4 py-8 md:py-20 overflow-hidden">
           <div className="mx-auto max-w-5xl text-center">
-            <h1 className="text-4xl font-black leading-[1.1] tracking-tight text-black md:text-6xl">
-              Transform Your Images into <br />
+            <h1 className="text-3xl font-black leading-[1.1] tracking-tight text-black md:text-6xl">
+              Transform Your Images into{" "}
               <span className="text-primary">Viral Videos</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
@@ -274,12 +274,12 @@ export default function Home() {
         </section>
 
         {/* Main Content */}
-        <section className="mx-auto mb-20 max-w-5xl px-6">
+        <section className="mx-auto mb-20 max-w-5xl px-3 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-12">
             {/* Left Column - Controls */}
             <div className="lg:col-span-5 space-y-6">
               {/* Upload Area */}
-              <div className={`rounded-2xl border-2 border-dashed border-primary/20 bg-white p-8 shadow-sm backdrop-blur-sm ${viewState === 'result' ? 'opacity-50 pointer-events-none' : ''}`}>
+              <div className={`rounded-2xl border-2 border-dashed border-primary/20 bg-white p-4 sm:p-8 shadow-sm backdrop-blur-sm ${viewState === 'result' ? 'opacity-50 pointer-events-none' : ''}`}>
                 <h3 className="text-lg font-bold mb-4">Step 1: Upload Source</h3>
 
                 {previewUrl ? (
@@ -384,7 +384,7 @@ export default function Home() {
                       {/* Left Arrow */}
                       <button
                         onClick={() => scrollCarousel('left')}
-                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 z-10 bg-white/90 hover:bg-white border border-gray-200 rounded-full p-2 shadow-lg transition-all"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white border border-gray-200 rounded-full p-1.5 shadow-lg transition-all"
                         aria-label="Scroll left"
                       >
                         <ChevronLeft className="w-4 h-4 text-gray-700" />
@@ -393,7 +393,7 @@ export default function Home() {
                       {/* Right Arrow */}
                       <button
                         onClick={() => scrollCarousel('right')}
-                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 z-10 bg-white/90 hover:bg-white border border-gray-200 rounded-full p-2 shadow-lg transition-all"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white border border-gray-200 rounded-full p-1.5 shadow-lg transition-all"
                         aria-label="Scroll right"
                       >
                         <ChevronRight className="w-4 h-4 text-gray-700" />
@@ -402,7 +402,7 @@ export default function Home() {
                       {/* Carousel Container */}
                       <div
                         ref={carouselRef}
-                        className="overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory"
+                        className="overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory px-7"
                       >
                         <div className="flex gap-3 pb-2 px-1">
                           {videoTemplates.map((template) => (
@@ -600,21 +600,21 @@ export default function Home() {
                     <div className="flex gap-2">
                       <button
                         onClick={handleDownload}
-                        className="flex items-center gap-2 rounded-lg bg-white border border-primary/20 px-4 py-3 text-sm font-bold hover:bg-primary/5"
+                        className="flex items-center gap-1.5 rounded-lg bg-white border border-primary/20 px-3 py-2.5 text-xs sm:text-sm font-bold hover:bg-primary/5"
                       >
                         <Download className="w-4 h-4" />
                         Download
                       </button>
                       <button
                         onClick={handleShare}
-                        className="flex items-center gap-2 rounded-lg bg-white border border-primary/20 px-4 py-3 text-sm font-bold hover:bg-primary/5"
+                        className="flex items-center gap-1.5 rounded-lg bg-white border border-primary/20 px-3 py-2.5 text-xs sm:text-sm font-bold hover:bg-primary/5"
                       >
                         <Share2 className="w-4 h-4" />
                         Share
                       </button>
                       <button
                         onClick={resetAll}
-                        className="flex items-center gap-2 rounded-lg bg-white border border-primary/20 px-4 py-3 text-sm font-bold hover:bg-primary/5"
+                        className="flex items-center gap-1.5 rounded-lg bg-white border border-primary/20 px-3 py-2.5 text-xs sm:text-sm font-bold hover:bg-primary/5"
                       >
                         <RefreshCw className="w-4 h-4" />
                         Start Over
@@ -656,8 +656,8 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-white border-t border-primary/10 py-12">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid gap-12 md:grid-cols-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid gap-8 grid-cols-2 md:grid-cols-4">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <div className="font-black text-2xl text-primary">Pinkvilla</div>
@@ -709,6 +709,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }
