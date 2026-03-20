@@ -246,9 +246,9 @@ export default function Home() {
   };
 
   return (
-    <div className="overflow-x-hidden w-full">
+    <div className="overflow-x-hidden w-full max-w-[100vw]">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-primary/10">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-primary/10 w-full">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4">
           <div className="flex items-center gap-8">
             <div className="font-black text-2xl text-primary">Pinkvilla</div>
@@ -256,15 +256,15 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex-1">
+      <main className="flex-1 w-full overflow-x-hidden">
         {/* Hero Section */}
-        <section className="relative px-4 py-8 md:py-20 overflow-hidden">
+        <section className="relative px-4 py-8 md:py-20 overflow-hidden w-full">
           <div className="mx-auto max-w-5xl text-center">
             <h1 className="text-3xl font-black leading-[1.1] tracking-tight text-black md:text-6xl">
               Transform Your Images into{" "}
               <span className="text-primary">Viral Videos</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
+            <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-slate-600 dark:text-slate-400 px-2">
               Create stunning AI-powered animations from your photos in seconds. Professional cinematic results with one click.
             </p>
           </div>
@@ -274,12 +274,12 @@ export default function Home() {
         </section>
 
         {/* Main Content */}
-        <section className="mx-auto mb-20 max-w-5xl px-3 sm:px-6">
-          <div className="grid gap-8 lg:grid-cols-12">
+        <section className="mx-auto mb-20 max-w-5xl w-full px-3 sm:px-6">
+          <div className="grid gap-8 lg:grid-cols-12 w-full min-w-0">
             {/* Left Column - Controls */}
-            <div className="lg:col-span-5 space-y-6">
+            <div className="lg:col-span-5 space-y-6 min-w-0 w-full">
               {/* Upload Area */}
-              <div className={`rounded-2xl border-2 border-dashed border-primary/20 bg-white p-4 sm:p-8 shadow-sm backdrop-blur-sm ${viewState === 'result' ? 'opacity-50 pointer-events-none' : ''}`}>
+              <div className={`rounded-2xl border-2 border-dashed border-primary/20 bg-white p-4 sm:p-8 shadow-sm backdrop-blur-sm w-full min-w-0 overflow-hidden ${viewState === 'result' ? 'opacity-50 pointer-events-none' : ''}`}>
                 <h3 className="text-lg font-bold mb-4">Step 1: Upload Source</h3>
 
                 {previewUrl ? (
@@ -380,7 +380,7 @@ export default function Home() {
                 {previewUrl && (
                   <div className="space-y-4 mt-6">
                     <h3 className="text-lg font-bold">Step 2: Choose Template</h3>
-                    <div className="relative">
+                    <div className="relative w-full min-w-0 overflow-hidden">
                       {/* Left Arrow */}
                       <button
                         onClick={() => scrollCarousel('left')}
@@ -402,14 +402,14 @@ export default function Home() {
                       {/* Carousel Container */}
                       <div
                         ref={carouselRef}
-                        className="overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory px-7"
+                        className="overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory px-7 w-full"
                       >
                         <div className="flex gap-3 pb-2 px-1">
                           {videoTemplates.map((template) => (
                             <div
                               key={template.id}
                               onClick={() => setSelectedTemplate(template)}
-                              className={`flex-shrink-0 w-28 snap-start cursor-pointer transition-all duration-200 ${
+                              className={`flex-shrink-0 w-24 sm:w-28 snap-start cursor-pointer transition-all duration-200 ${
                                 selectedTemplate.id === template.id
                                   ? "ring-2 ring-primary scale-105"
                                   : "hover:scale-102"
@@ -492,7 +492,7 @@ export default function Home() {
 
               {/* Progress Display */}
               {viewState === "processing" && (
-                <div className="rounded-2xl bg-white p-6 shadow-xl shadow-primary/5 border border-primary/5">
+                <div className="rounded-2xl bg-white p-4 sm:p-6 shadow-xl shadow-primary/5 border border-primary/5 w-full">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-bold">Active Task</h3>
                     <span className="text-xs font-mono bg-primary/10 text-primary px-2 py-1 rounded">ID: #PV-88291</span>
@@ -515,7 +515,7 @@ export default function Home() {
 
               {/* Error Display */}
               {error && (
-                <div className="rounded-2xl bg-red-50 p-6 border border-red-200">
+                <div className="rounded-2xl bg-red-50 p-4 sm:p-6 border border-red-200 w-full">
                   <div className="flex items-center gap-3">
                     <AlertCircle className="w-5 h-5 text-red-500" />
                     <p className="text-sm font-medium text-red-700">{error}</p>
@@ -525,7 +525,7 @@ export default function Home() {
             </div>
 
             {/* Right Column - Video Preview */}
-            <div className="lg:col-span-7">
+            <div className="lg:col-span-7 min-w-0 w-full">
               {viewState === "result" && videoUrl ? (
                 <div className="space-y-6">
                   <div className="overflow-hidden rounded-2xl bg-slate-900 shadow-2xl shadow-primary/20 aspect-[9/16] relative group">
@@ -622,16 +622,16 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="rounded-xl bg-white p-4 border border-primary/5">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                    <div className="rounded-xl bg-white p-2 sm:p-4 border border-primary/5">
                       <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Duration</p>
                       <p className="font-bold">0:15s</p>
                     </div>
-                    <div className="rounded-xl bg-white p-4 border border-primary/5">
+                    <div className="rounded-xl bg-white p-2 sm:p-4 border border-primary/5">
                       <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Resolution</p>
                       <p className="font-bold">1080x1920</p>
                     </div>
-                    <div className="rounded-xl bg-white p-4 border border-primary/5">
+                    <div className="rounded-xl bg-white p-2 sm:p-4 border border-primary/5">
                       <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Style</p>
                       <p className="font-bold">{selectedTemplate.name}</p>
                     </div>
