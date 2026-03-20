@@ -39,7 +39,8 @@ const videoTemplates = [
     description: "Professional film-style video",
     thumbnailVideo: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
     videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-    aspectRatio: "9:16"
+    aspectRatio: "9:16",
+    resolution: "1280x720"
   },
   {
     id: "social",
@@ -47,7 +48,8 @@ const videoTemplates = [
     description: "Vertical format for reels/stories",
     thumbnailVideo: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.mp4",
     videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.mp4",
-    aspectRatio: "9:16"
+    aspectRatio: "9:16",
+    resolution: "1280x720"
   },
   {
     id: "business",
@@ -55,15 +57,17 @@ const videoTemplates = [
     description: "Corporate presentation style",
     thumbnailVideo: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    aspectRatio: "9:16"
+    aspectRatio: "9:16",
+    resolution: "854x480"
   },
   {
-    id: "artistic",
+    id: "artistic", 
     name: "Artistic",
     description: "Creative effects and transitions",
     thumbnailVideo: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-    aspectRatio: "9:16"
+    aspectRatio: "9:16",
+    resolution: "640x360"
   },
   {
     id: "minimal",
@@ -71,7 +75,8 @@ const videoTemplates = [
     description: "Clean and simple animations",
     thumbnailVideo: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-    aspectRatio: "9:16"
+    aspectRatio: "9:16",
+    resolution: "426x240"
   }
 ];
 
@@ -629,7 +634,7 @@ export default function Home() {
                     </div>
                     <div className="rounded-xl bg-white p-2 sm:p-4 border border-primary/5">
                       <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Resolution</p>
-                      <p className="font-bold">1080x1920</p>
+                      <p className="font-bold">{selectedTemplate.resolution}</p>
                     </div>
                     <div className="rounded-xl bg-white p-2 sm:p-4 border border-primary/5">
                       <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Style</p>
